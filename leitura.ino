@@ -3,16 +3,17 @@
 //Baseado no exemplo original da biblioteca Adafruit Fingerprint
 
 #include <Adafruit_Fingerprint.h>
-#include <Servo.h>
-
-//Cria um objeto para controlar o servo motor
-Servo myservo;
 
 //Parametros da serial por software (pinos 2 e 3)
 SoftwareSerial mySerial(2, 3);
 
-#define pino_led 7
-#define pino_servo 8
+// portas de saida
+#define INT1 6
+#define INT2 7
+#define INT3 8
+#define INT4 9
+#define INT5 10
+#define INT6 11
 
 Adafruit_Fingerprint finger = Adafruit_Fingerprint(&mySerial);
 
@@ -20,12 +21,6 @@ void setup()
 {
   Serial.begin(9600);
   Serial.println("\n\nModulo Leitor de Impressao Digital - Leitura");
-  pinMode(pino_led, OUTPUT);
-  digitalWrite(pino_led, LOW);
-
-  // Define que o servo esta ligado a porta 7
-  myservo.attach(pino_servo);
-  myservo.write(0);
 
   //Taxa de comunicação com o modulo
   finger.begin(57600);
@@ -114,14 +109,8 @@ uint8_t getFingerprintID() {
   if (p == FINGERPRINT_OK)
   {
     Serial.println("Encontrada digital correspondente!");
-    //Aciona o led e o servo motor
-    digitalWrite(pino_led, HIGH);
-    myservo.write(90);
     //Aguarda 1 segundo e desliga o led e o servo
-    delay(1000);
-    digitalWrite(pino_led, LOW);
-    myservo.write(0);
-
+    delay(1000); 
   } else if (p == FINGERPRINT_PACKETRECIEVEERR) {
     Serial.println("Communication error");
     return p;
@@ -134,8 +123,37 @@ uint8_t getFingerprintID() {
   }
 
   Serial.print("ID encontrado #"); Serial.print(finger.fingerID);
+  enviar(finger.fingerID);
   Serial.print(" com confianca de "); Serial.println(finger.confidence);
   return finger.fingerID;
+}
+
+void enviar(int numero)
+{
+  int lista_valores[5];
+  Serial.print("\n");
+  
+  // loop para passar os valores para uma lista
+  for (int i = 0; i <= 5; i++)
+  {
+    if (numero % 2 == 0)
+    {
+      lista_valores[i] = 0;
+      numero = numero / 2;
+    }
+    else if (numero % 2 == 1)
+    {
+      lista_valores[i] = 1;
+      numero = numero / 2;
+    }
+  }
+
+  digitalWrite(INT1, lista_valores[0]);
+  digitalWrite(INT2, lista_valores[1]);
+  digitalWrite(INT3, lista_valores[3]);
+  digitalWrite(INT4, lista_valores[4]);
+  digitalWrite(INT5, lista_valores[5]);
+  digitalWrite(INT6, lista_valores[6]);
 }
 
 //Retorna -1 em caso de falha, senao retorna o numero do ID
