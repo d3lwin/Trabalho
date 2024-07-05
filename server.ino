@@ -4,6 +4,14 @@
 const char* ssid = "00000000";
 const char* password = "00000000";
 
+// portas de saida
+#define INT1 1
+#define INT2 2
+#define INT3 3
+#define INT4 4
+#define INT5 5
+#define INT6 6
+
 AsyncWebServer server(80);
 
 String getHTML() {
