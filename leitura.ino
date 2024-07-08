@@ -57,8 +57,11 @@ void setup()
 
 void loop()
 {
-  getFingerprintID();
-  delay(50);
+  if (digitalRead(INT11) == 1)
+  {
+    getFingerprintID();
+    delay(50);
+  }
 }
 
 uint8_t getFingerprintID() {
@@ -153,7 +156,6 @@ void enviar(int numero)
   digitalWrite(INT3, lista_valores[3]);
   digitalWrite(INT4, lista_valores[4]);
   digitalWrite(INT5, lista_valores[5]);
-  digitalWrite(INT6, lista_valores[6]);
 }
 
 //Retorna -1 em caso de falha, senao retorna o numero do ID
