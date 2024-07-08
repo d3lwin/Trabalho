@@ -4,7 +4,7 @@
 const char* ssid = "00000000";
 const char* password = "00000000";
 
-// portas de saida
+// portas de entrada
 #define INT1 1
 #define INT2 2
 #define INT3 3
@@ -13,6 +13,11 @@ const char* password = "00000000";
 #define INT6 6
 
 AsyncWebServer server(80);
+
+int getNum() {
+  int valor = (digitalRead(INT1) * 1) + (digitalRead(INT2) * 2) + (digitalRead(INT3) * 4) + (digitalRead(INT4) * 8) + (digitalRead(INT5) * 16);
+  return valor;
+}
 
 String getHTML() {
   String html = "<!DOCTYPE html>";
@@ -29,8 +34,6 @@ String getHTML() {
   html += ".button1:hover { background-color: #018152; color: white; }";
   html += ".button2 { background-color: red; color: black; }";
   html += ".button2:hover { background-color: #860202; color: white; }";
-  html += ".button3 { background-color: #008CBA; color: black; }";
-  html += ".button3:hover { background-color: #005774; color: white; }";
   html += "h1 { text-align: center; font-family: sans-serif; background-color: #005774; margin-top: 0px; padding: 10px; font-size: 50px; }";
   html += "table { font-family: arial, sans-serif; border-collapse: collapse; width: 70%; margin-top: 30px; }";
   html += "td { border: 2px solid #272727; text-align: left; padding: 8px; }";
@@ -41,9 +44,8 @@ String getHTML() {
   html += "<body>";
   html += "<h1>CHAMATRON</h1>";
   html += "<div>";
-  html += "<button class=\"button button1\" type=\"button\">LIGAR</button>";
-  html += "<button class=\"button button2\" type=\"button\">DESLIGAR</button>";
-  html += "<button class=\"button button3\" type=\"button\">CADASTRAR</button>";
+  html += "<button class=\"button button1\" type=\"button\"><a href="/on">LIGAR</a></button>";
+  html += "<button class=\"button button2\" type=\"button\"><a href="/off">DESLIGAR</a></button>";
   html += "</div>";
   html += "<div>";
   html += "<table>";
@@ -62,6 +64,15 @@ String getHTML() {
 }
 
 void setup() {
+  /*
+  pinMode(INT1, INPUT);
+  pinMode(INT2, INPUT);
+  pinMode(INT3, INPUT);
+  pinMode(INT4, INPUT);
+  pinMode(INT5, INPUT);
+  pinMode(INT6, INPUT);
+  */
+
   Serial.begin(115200);
   
   // Connect to Wi-Fi
@@ -84,10 +95,12 @@ void setup() {
   });
 
   // Route to control the car forward
-  server.on("/car/forward", HTTP_GET, [](AsyncWebServerRequest *request) {
+  server.on("/on", HTTP_GET, [](AsyncWebServerRequest *request) {
     Serial.println("ESP8266 Web Server: New request received:");
-    Serial.println("GET /car/forward");
+    Serial.println("GET /on");
     // Add the code to move the car forward
+    digitalWrite(INT6, HIGH);
+
     request->send(200, "text/html", getHTML());
   });
 
